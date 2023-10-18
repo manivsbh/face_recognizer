@@ -1,9 +1,16 @@
 from pathlib import Path
 from collections import Counter
+from pymongo import MongoClient
 import face_recognition
 import pickle
 import argparse
+import mysql.connector
+import glob
 from PIL import Image, ImageDraw
+from bson.binary import Binary
+import matplotlib.pyplot as plt
+import io
+import Add_data
 
 BOUNDING_BOX_COLOR = "blue"
 TEXT_COLOR = "white"
@@ -28,6 +35,19 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
+# MyDB = mysql.connector.connect(
+#     host = "localhost",
+#     user = "root",
+#     password = "YasH#!9933",
+#     database = "mytest_db"
+# )
+
+# MyCursor = MyDB.cursor()
+
+client = MongoClient("mongodb://localhost:27017/")
+db = client.Images
+images = db.Images_demo
+
 DEFAULT_ENCODINGS_PATH = Path("output/encodings.pkl")
 
 Path("training").mkdir(exist_ok=True)
@@ -39,10 +59,13 @@ def encode_known_faces(
 ) -> None:
     names = []
     encodings = []
-    for filepath in Path("training").glob("*/*"):
-        name = filepath.parent.name
-        image = face_recognition.load_image_file(filepath)
-        # print(name)
+
+
+    for filepath in images.find():
+        name = filepath["name"]
+        image_bytes = io.BytesIO(filepath["image"])
+        image = face_recognition.load_image_file(image_bytes)
+        print(name)
         face_locations = face_recognition.face_locations(image, model=model)
         face_encodings = face_recognition.face_encodings(image, face_locations)
 
@@ -52,8 +75,18 @@ def encode_known_faces(
 
     name_encodings = {"names": names, "encodings": encodings}
     print(name_encodings)
+    
+    # with encodings_location.open(mode="rb") as file:
+    #     pickle.load(file)
+
     with encodings_location.open(mode="wb") as f:
         pickle.dump(name_encodings, f)
+
+        # with open(filepath, "rb") as File:
+        #     BinaryData = File.read()
+        # SQLStatement = "INSERT INTO pictures (picture) VALUES (%s)"
+        # MyCursor.execute(SQLStatement, (BinaryData, ))
+        # MyDB.commit()
 
 # encode_known_faces()
 
@@ -89,6 +122,11 @@ def recognize_faces(
 
         del draw
         pillow_image.show()
+        
+        while name == "Unknown" :
+            Add_data.add_profile()
+            Add_data.add_encodings()
+
 
 def _recognize_face(unknown_encoding, loaded_encodings):
     boolean_matches = face_recognition.compare_faces(
