@@ -10,6 +10,7 @@ import io
 import add_data
 import os
 from dotenv import load_dotenv
+from capture_photo import capturePhoto
 
 BOUNDING_BOX_COLOR = "blue"
 TEXT_COLOR = "white"
@@ -59,6 +60,8 @@ def encode_known_faces(
 
     for filepath in images.find():
         name = filepath["name"]
+        # if name == "juhi_singh":
+        #     print("name----> ", name)
         image_bytes = io.BytesIO(filepath["image"])
         image = face_recognition.load_image_file(image_bytes)
         print(name)
@@ -171,4 +174,5 @@ if __name__ == "__main__":
     if args.validate:
         validate(model=args.m)
     if args.test:
+        capturePhoto.capture_photo_from_camera()
         recognize_faces(image_location=args.f, model=args.m)
