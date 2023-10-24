@@ -4,13 +4,12 @@ from pymongo import MongoClient
 import face_recognition
 import pickle
 import argparse
-import mysql.connector
-import glob
 from PIL import Image, ImageDraw
-from bson.binary import Binary
 import matplotlib.pyplot as plt
 import io
-import Add_data
+import add_data
+import os
+from dotenv import load_dotenv
 
 BOUNDING_BOX_COLOR = "blue"
 TEXT_COLOR = "white"
@@ -35,18 +34,15 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-# MyDB = mysql.connector.connect(
-#     host = "localhost",
-#     user = "root",
-#     password = "YasH#!9933",
-#     database = "mytest_db"
-# )
+load_dotenv()
 
-# MyCursor = MyDB.cursor()
+MONGODB_SERVER = os.getenv("client")
+DATABASE_NAME = os.getenv("db")
+COLLECTION_NAME = os.getenv("images")
 
-client = MongoClient("mongodb://localhost:27017/")
-db = client.Images
-images = db.Images_demo
+client = MongoClient(MONGODB_SERVER)  
+db = client.DATABASE_NAME         
+images = db.COLLECTION_NAME  
 
 DEFAULT_ENCODINGS_PATH = Path("output/encodings.pkl")
 
@@ -124,8 +120,8 @@ def recognize_faces(
         pillow_image.show()
         
         while name == "Unknown" :
-            Add_data.add_profile()
-            Add_data.add_encodings()
+            add_data.add_profile()
+            add_data.add_encodings()
 
 
 def _recognize_face(unknown_encoding, loaded_encodings):

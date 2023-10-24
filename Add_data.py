@@ -4,10 +4,19 @@ from detector import DEFAULT_ENCODINGS_PATH
 from pathlib import Path
 import face_recognition
 import pickle
+import os
+from dotenv import load_dotenv
 
-client = MongoClient("mongodb://localhost:27017/")
-db = client.Images
-images = db.Images_demo
+load_dotenv()
+
+MONGODB_SERVER = os.getenv("client")
+DATABASE_NAME = os.getenv("db")
+COLLECTION_NAME = os.getenv("images")
+
+
+client = MongoClient(MONGODB_SERVER)  
+db = client.DATABASE_NAME         
+images = db.COLLECTION_NAME   
 encodings_location : Path = DEFAULT_ENCODINGS_PATH
 
 
@@ -20,17 +29,17 @@ def add_profile():
         name = input("Enter the name of the image ")
         with open(image_path, "rb") as file:
             image_bytes = io.BytesIO(file.read())
-        image1 = {
+        image_new = {
             'name': name,
             'image': image_bytes.getvalue()
             }
-        return images.insert_one(image1)
+        return images.insert_one(image_new)
     if data == "No":
         exit()
 
 def add_encodings():
-    names1 = []
-    encodings2 = []
+    names_new = []
+    encodings_new = []
     add_encode = input("Do you want to train the latest image ")
     if add_encode == "Yes":
        image_name = name 
@@ -38,8 +47,8 @@ def add_encodings():
        face_locations = face_recognition.face_locations(file_path)
        face_encodings = face_recognition.face_encodings(file_path, face_locations)
        for encoding in face_encodings:
-            names1.append(image_name)
-            encodings2.append(encoding)
+            names_new.append(image_name)
+            encodings_new.append(encoding)
     #    name_encodings1 = {"names": names, "encodings": encodings}
        print(encoding)
 
