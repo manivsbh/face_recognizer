@@ -9,14 +9,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-MONGODB_SERVER = os.getenv("client")
-DATABASE_NAME = os.getenv("db")
-COLLECTION_NAME = os.getenv("images")
+MONGODB_SERVER = os.getenv("MONGODB_SERVER")
+DATABASE_NAME = os.getenv("DATABASE_NAME")
+COLLECTION_NAME = os.getenv("COLLECTION_NAME")
+
 
 
 client = MongoClient(MONGODB_SERVER)  
-db = client.DATABASE_NAME         
-images = db.COLLECTION_NAME   
+db = client[DATABASE_NAME]         
+images = db[COLLECTION_NAME]   
 encodings_location : Path = DEFAULT_ENCODINGS_PATH
 
 
@@ -24,7 +25,7 @@ def add_profile():
     global name
     global image_path
     data = input("Do you want to update your image in mongodb: ")
-    if data == "Yes":
+    if data == "yes":
         image_path = input("Enter the path of the image ")
         name = input("Enter the name of the image ")
         with open(image_path, "rb") as file:
@@ -34,14 +35,14 @@ def add_profile():
             'image': image_bytes.getvalue()
             }
         return images.insert_one(image_new)
-    if data == "No":
+    if data == "no":
         exit()
 
 def add_encodings():
     names_new = []
     encodings_new = []
     add_encode = input("Do you want to train the latest image ")
-    if add_encode == "Yes":
+    if add_encode == "yes":
        image_name = name 
        file_path = face_recognition.load_image_file(image_path)
        face_locations = face_recognition.face_locations(file_path)

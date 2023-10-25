@@ -37,13 +37,13 @@ args = parser.parse_args()
 
 load_dotenv()
 
-MONGODB_SERVER = os.getenv("client")
-DATABASE_NAME = os.getenv("db")
-COLLECTION_NAME = os.getenv("images")
+MONGODB_SERVER = os.getenv("MONGODB_SERVER")
+DATABASE_NAME = os.getenv("DATABASE_NAME")
+COLLECTION_NAME = os.getenv("COLLECTION_NAME")
 
 client = MongoClient(MONGODB_SERVER)  
-db = client.DATABASE_NAME         
-images = db.COLLECTION_NAME  
+db = client[DATABASE_NAME]       
+images = db[COLLECTION_NAME]  
 
 DEFAULT_ENCODINGS_PATH = Path("output/encodings.pkl")
 
@@ -113,7 +113,7 @@ def recognize_faces(
         input_face_locations, input_face_encodings
     ):
         name = _recognize_face(unknown_encoding, loaded_encodings)
-        # print("name of image", name)
+        print("name of image", name)
         if not name:
             name = "Unknown"
             # Removed print(name, bounding_box)

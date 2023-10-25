@@ -17,8 +17,8 @@ print(COLLECTION_NAME)
 
 
 client = MongoClient(MONGODB_SERVER) 
-db = client.DATABASE_NAME  
-images = db.COLLECTION_NAME 
+db = client[DATABASE_NAME] 
+images = db[COLLECTION_NAME]
 for filepath in Path("C:\\Users\\YashwanthSaiRamVanum\\Documents\\Local git\\face_recognizer\\training").glob("*/*"):  
     name = filepath.parent.name
     with open(filepath, "rb") as file:
